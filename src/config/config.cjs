@@ -10,7 +10,8 @@ module.exports = {
 		database: normalizeEnvValue(process.env.MYSQL_DATABASE, "school_management"),
 		host: normalizeEnvValue(process.env.MYSQL_HOST, "127.0.0.1"),
 		port: getPort(),
-		dialect: "mysql"
+		dialect: "mysql",
+		logging: false
 	},
 	test: {
 		username: normalizeEnvValue(process.env.MYSQL_USER, "root"),
@@ -18,7 +19,8 @@ module.exports = {
 		database: normalizeEnvValue(process.env.MYSQL_TEST_DATABASE, "school_management_test"),
 		host: normalizeEnvValue(process.env.MYSQL_HOST, "127.0.0.1"),
 		port: getPort(),
-		dialect: "mysql"
+		dialect: "mysql",
+		logging: false
 	},
 	production: {
 		username: normalizeEnvValue(process.env.MYSQL_USER, "root"),
@@ -26,6 +28,7 @@ module.exports = {
 		database: normalizeEnvValue(process.env.MYSQL_DATABASE, "school_management"),
 		host: normalizeEnvValue(process.env.MYSQL_HOST, "127.0.0.1"),
 		port: getPort(),
-		dialect: "mysql"
+		dialect: "mysql",
+		logging: false
 	}
 };
