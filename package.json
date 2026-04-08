@@ -5,7 +5,7 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-  "start": "ls -R && node src/app.js",
+  "start": "ls -R && node src/index.js",
     "dev": "npx nodemon src/index.js",
     "seed": "npx sequelize-cli db:seed:all"
   },
