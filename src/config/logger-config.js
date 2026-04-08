@@ -1,6 +1,8 @@
 import { createLogger, format, transports } from "winston";
 const { combine, timestamp, label, printf } = format;
 
+const isVercelRuntime = Boolean(process.env.VERCEL);
+
 const customFormat = printf(( { level, message, label, timestamp } ) => {
     return `${timestamp} : [${label}] : ${level} : ${message}`;
 });
@@ -12,7 +14,7 @@ const logger = createLogger({
     ),
     transports: [
         new transports.Console(),
-        new transports.File({ filename : 'combined.log'})
+        ...(!isVercelRuntime ? [new transports.File({ filename : 'combined.log'})] : [])
     ]
 })
 

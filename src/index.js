@@ -1,10 +1,10 @@
 import express from "express";
 
-import { ServerConfig } from "./config/index.js";
+import ServerConfig from "./config/server-config.js";
 import apiRoutes from "./routes/index.js";
 import { globalErrorHandler, notFound } from "./middlewares/index.js";
 import { sequelize } from "./models/index.js";
-import { ensureDatabaseExists } from "./config/db-config.js";
+import { ensureDatabaseExists, waitForDatabaseConnection } from "./config/db-config.js";
 
 const app = express();
 
@@ -20,7 +20,7 @@ export default app;
 
 const initializeDatabase = async () => {
     await ensureDatabaseExists();
-    await sequelize.authenticate();
+    await waitForDatabaseConnection();
     await sequelize.sync();
 };
 
