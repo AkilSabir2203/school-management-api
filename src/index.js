@@ -16,19 +16,27 @@ app.use("/api", apiRoutes);
 app.use(notFound);
 app.use(globalErrorHandler);
 
-const startServer = async () => {
-    try {
-        await ensureDatabaseExists();
-        await sequelize.authenticate();
-        await sequelize.sync();
+export default app;
 
-        app.listen(ServerConfig.PORT, () => {
-            console.log(`Successfully started the server on PORT : ${ServerConfig.PORT}`);
-        });
-    } catch (error) {
-        console.error("Unable to prepare the database:", error.message);
-        process.exit(1);
-    }
+const initializeDatabase = async () => {
+    await ensureDatabaseExists();
+    await sequelize.authenticate();
+    await sequelize.sync();
 };
 
-startServer();
+if (process.env.VERCEL) {
+    initializeDatabase().catch((error) => {
+        console.error("Unable to prepare the database:", error.message);
+    });
+} else {
+    initializeDatabase()
+        .then(() => {
+            app.listen(ServerConfig.PORT, () => {
+                console.log(`Successfully started the server on PORT : ${ServerConfig.PORT}`);
+            });
+        })
+        .catch((error) => {
+            console.error("Unable to prepare the database:", error.message);
+            process.exit(1);
+        });
+}
