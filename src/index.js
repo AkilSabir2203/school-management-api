@@ -24,11 +24,7 @@ const initializeDatabase = async () => {
     await sequelize.sync();
 };
 
-if (process.env.VERCEL) {
-    initializeDatabase().catch((error) => {
-        console.error("Unable to prepare the database:", error.message);
-    });
-} else {
+if (!process.env.VERCEL) {
     initializeDatabase()
         .then(() => {
             app.listen(ServerConfig.PORT, () => {
