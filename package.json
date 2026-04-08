@@ -1,17 +1,19 @@
 {
-  "name": "base-node-js-project-template",
+  "name": "school-management-api",
   "version": "1.0.0",
   "description": "Project boilerplate for node",
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "dev": "npx nodemon src/index.js"
+    "dev": "npx nodemon src/index.js",
+    "seed": "npx sequelize-cli db:seed:all"
   },
   "author": "Akil Sabir",
   "license": "ISC",
   "dependencies": {
     "dotenv": "^17.2.3",
     "express": "^5.2.1",
+    "express-validator": "^7.3.2",
     "http-status-codes": "^2.3.0",
     "mysql2": "^3.16.1",
     "sequelize": "^6.37.7",

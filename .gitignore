@@ -1,4 +1,6 @@
 node_modules/
 .env
+.env.*
+*.log
 combined.log
 src/config/config.json

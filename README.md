@@ -1,48 +1,279 @@
-This is a base node js project template, which anyone can use as it has been prepared, by keeping some of the most important code principles and project management recommendations. Feel free to change anything. 
+# School Management API
 
+Node.js, Express, and Sequelize API for managing schools in MySQL.
 
-`src` -> Inside the src folder all the actual source code regarding the project will reside, this will not include any kind of tests. (You might want to make separate tests folder)
+The application supports:
 
-Lets take a look inside the `src` folder
+- Automatic MySQL database creation on startup
+- Automatic table creation with Sequelize sync
+- Seed data insertion with Sequelize CLI
+- School creation and listing APIs
+- Distance-based sorting using the Haversine formula
+- Request validation with express-validator
 
- - `config` -> In this folder anything and everything regarding any configurations or setup of a library or module will be done. For example: setting up `dotenv` so that we can use the environment variables anywhere in a cleaner fashion, this is done in the `server-config.js`. One more example can be to setup you logging library that can help you to prepare meaningful logs, so configuration for this library should also be done here. 
+## Tech Stack
 
- - `routes` -> In the routes folder, we register a route and the corresponding middleware and controllers to it. 
+- Node.js
+- Express
+- Sequelize
+- MySQL
+- express-validator
+- dotenv
 
- - `middlewares` -> they are just going to intercept the incoming requests where we can write our validators, authenticators etc. 
+## Project Structure
 
- - `controllers` -> they are kind of the last middlewares as post them you call you business layer to execute the budiness logic. In controllers we just receive the incoming requests and data and then pass it to the business layer, and once business layer returns an output, we structure the API response in controllers and send the output. 
+The main application code lives inside src:
 
- - `repositories` -> this folder contains all the logic using which we interact the DB by writing queries, all the raw queries or ORM queries will go here.
+- src/config - environment and database setup
+- src/controllers - request handlers
+- src/middlewares - validation and error handlers
+- src/models - Sequelize model definitions
+- src/routes - versioned route files
+- src/services - business logic and database access
+- src/migrations - Sequelize migration files
+- src/seeders - Sequelize seed files
 
- - `services` -> contains the buiness logic and interacts with repositories for data from the database
+## Setup
 
- - `utils` -> contains helper methods, error classes etc.
+### 1. Install dependencies
 
-### Setup the project
+```bash
+npm install
+```
 
- - Download this template from github and open it in your favourite text editor. 
- - Go inside the folder path and execute the following command:
-  ```
-  npm install
-  ```
- - In the root directory create a `.env` file and add the following env variables
-    ```
-        PORT=<port number of your choice>
-    ```
-    ex: 
-    ```
-        PORT=3000
-    ```
- - go inside the `src` folder and execute the following command:
-    ```
-      npx sequelize init
-    ```
- - By executing the above command you will get migrations and seeders folder along with a config.json inside the config folder. 
- - If you're setting up your development environment, then write the username of your db, password of your db and in dialect mention whatever db you are using for ex: mysql, mariadb etc
- - If you're setting up test or prod environment, make sure you also replace the host with the hosted db url.
+### 2. Configure environment variables
 
- - To run the server execute
- ```
- npm run dev
- ```
+Create a .env file in the project root with the following values:
+
+```env
+MYSQL_USER="root"
+MYSQL_PASSWORD="your_mysql_password"
+MYSQL_DATABASE="school_management"
+MYSQL_HOST="127.0.0.1"
+MYSQL_PORT="3306"
+PORT=3000
+```
+
+Notes:
+
+- MYSQL_DATABASE is the database that the app will create if it does not already exist.
+- The app currently creates the database automatically at startup.
+- The school table is created automatically through Sequelize sync.
+
+### 3. Run the app
+
+```bash
+npm run dev
+```
+
+The server starts on the port defined in PORT.
+
+### 4. Seed the database
+
+```bash
+npm run seed
+```
+
+This inserts the initial school rows into the schools table.
+
+## Database Behavior
+
+On startup the app does the following:
+
+1. Connects to MySQL using the values from .env
+2. Creates the database if it does not exist
+3. Authenticates the Sequelize connection
+4. Syncs the Sequelize models to create the schools table
+
+## Sequelize Model
+
+The School model includes:
+
+- id - auto increment primary key
+- name - required string
+- address - required string
+- latitude - required float
+- longitude - required float
+
+## API Endpoints
+
+### 1. GET /api/v1/info
+
+Returns a basic API health response.
+
+Example response:
+
+```json
+{
+  "success": true,
+  "message": "API is Live",
+  "error": {},
+  "data": {}
+}
+```
+
+### 2. POST /api/v1/addSchool
+
+Creates a new school record.
+
+Request body:
+
+```json
+{
+  "name": "Green Valley School",
+  "address": "123 Main Street",
+  "latitude": 12.9716,
+  "longitude": 77.5946
+}
+```
+
+Validation rules:
+
+- name is required
+- address is required
+- latitude is required and must be a valid number between -90 and 90
+- longitude is required and must be a valid number between -180 and 180
+
+Success response:
+
+```json
+{
+  "success": true,
+  "message": "School created successfully",
+  "data": {
+    "id": 1,
+    "name": "Green Valley School",
+    "address": "123 Main Street",
+    "latitude": 12.9716,
+    "longitude": 77.5946
+  }
+}
+```
+
+Status code:
+
+- 201 Created
+
+### 3. GET /api/v1/listSchools
+
+Returns all schools sorted by proximity from the supplied coordinates.
+
+Query parameters:
+
+- latitude - required
+- longitude - required
+
+Example URL:
+
+```text
+http://localhost:3000/api/v1/listSchools?latitude=20&longitude=80
+```
+
+Validation rules:
+
+- latitude is required and must be a valid number between -90 and 90
+- longitude is required and must be a valid number between -180 and 180
+
+Success response:
+
+```json
+{
+  "success": true,
+  "message": "Schools fetched successfully",
+  "data": [
+    {
+      "id": 1,
+      "name": "Rajkumar College (RKC)",
+      "address": "G.E. Road, Mukut Nagar, Raipur, Chhattisgarh 492001",
+      "latitude": 21.2392,
+      "longitude": 81.6166,
+      "distance": 0
+    },
+    {
+      "id": 2,
+      "name": "St. Xavier's High School",
+      "address": "Avanti Vihar, Ravigram, Raipur, Chhattisgarh 492006",
+      "latitude": 21.2471,
+      "longitude": 81.6667,
+      "distance": 5.12
+    }
+  ]
+}
+```
+
+Status code:
+
+- 200 OK
+
+### Validation Error Response
+
+```json
+{
+  "success": false,
+  "message": "Validation failed",
+  "errors": [
+    {
+      "field": "latitude",
+      "message": "Latitude query parameter is required"
+    }
+  ]
+}
+```
+
+## Example Requests
+
+### cURL - Add School
+
+```bash
+curl -X POST http://localhost:3000/api/v1/addSchool \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Green Valley School",
+    "address": "123 Main Street",
+    "latitude": 12.9716,
+    "longitude": 77.5946
+  }'
+```
+
+### cURL - List Schools
+
+```bash
+curl "http://localhost:3000/api/v1/listSchools?latitude=20&longitude=80"
+```
+
+## Seed Data
+
+The current seeder inserts sample schools into the schools table:
+
+- Rajkumar College (RKC)
+- St. Xavier's High School
+
+Run the seeder after the app has created the database and table:
+
+```bash
+npm run seed
+```
+
+## Notes
+
+- The app uses a global error handler for unhandled route and server errors.
+- listSchools uses the Haversine formula to calculate distance in kilometers.
+- The current route structure exposes school endpoints under /api/v1/addSchool and /api/v1/listSchools.
+- If you change the port in .env, update the endpoint URLs accordingly.
+
+## Troubleshooting
+
+### Route not found
+
+Make sure you are calling the current versioned URLs:
+
+- /api/v1/addSchool
+- /api/v1/listSchools
+
+### Validation failed for listSchools
+
+Pass both latitude and longitude as query parameters in the URL.
+
+### Database not created
+
+Check that MYSQL_USER, MYSQL_PASSWORD, MYSQL_HOST, and MYSQL_PORT are valid and that the MySQL server is running.
