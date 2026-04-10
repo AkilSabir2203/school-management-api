@@ -62,16 +62,19 @@ const sequelize = new Sequelize(mysqlDatabase, mysqlUser, mysqlPassword, {
     host: mysqlHost,
     port: mysqlPort,
     dialect: mysqlDialect,
-    logging: normalizeEnvValue(MYSQL_LOGGING, "false") === "true" ? console.log : false,
+    logging: false,
     pool: {
-        max: 5,
+        max: 2, // REDUCE THIS: Vercel creates many instances; high limits crash Clever Cloud
         min: 0,
         acquire: 30000,
         idle: 10000
     },
     dialectOptions: {
-        connectTimeout: 10000,
-        ...(mysqlSslConfig ? { ssl: mysqlSslConfig } : {})
+        connectTimeout: 20000,
+        ssl: {
+            require: true,
+            rejectUnauthorized: false // This allows the Clever Cloud cert to pass
+        }
     }
 });
 

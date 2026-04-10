@@ -29,6 +29,12 @@ module.exports = {
 		host: normalizeEnvValue(process.env.MYSQL_HOST, "127.0.0.1"),
 		port: getPort(),
 		dialect: "mysql",
-		logging: false
+		logging: false,
+		dialectOptions: {
+			ssl: {
+				require: true,
+				rejectUnauthorized: false
+			}
+		}
 	}
 };
