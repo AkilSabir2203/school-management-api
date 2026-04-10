@@ -11,6 +11,10 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+app.get("/", (req, res) => {
+    res.redirect("/api/v1/info");
+});
+
 app.use(async (req, res, next) => {
     try {
         await waitForDatabaseConnection();
