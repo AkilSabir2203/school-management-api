@@ -11,6 +11,15 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+app.use(async (req, res, next) => {
+    try {
+        await waitForDatabaseConnection();
+        next();
+    } catch (error) {
+        res.status(500).json({ error: "Database connection failed" });
+    }
+});
+
 app.use("/api", apiRoutes);
 
 app.use(notFound);
@@ -25,14 +34,12 @@ const initializeDatabase = async () => {
 };
 
 if (!process.env.VERCEL) {
-    initializeDatabase()
+    waitForDatabaseConnection()
+        .then(() => sequelize.sync())
         .then(() => {
             app.listen(ServerConfig.PORT, () => {
-                console.log(`Successfully started the server on PORT : ${ServerConfig.PORT}`);
+                console.log(`Server started on PORT : ${ServerConfig.PORT}`);
             });
         })
-        .catch((error) => {
-            console.error("Unable to prepare the database:", error.message);
-            process.exit(1);
-        });
+        .catch((err) => console.error(err));
 }
