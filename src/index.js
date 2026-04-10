@@ -16,11 +16,22 @@ app.get("/", (req, res) => {
 });
 
 app.use(async (req, res, next) => {
+    const isHealthRoute = req.path === "/" || req.path === "/api/v1/info";
+
+    if (isHealthRoute) {
+        return next();
+    }
+
     try {
         await waitForDatabaseConnection();
-        next();
+        return next();
     } catch (error) {
-        res.status(500).json({ error: "Database connection failed" });
+        return res.status(500).json({
+            success: false,
+            message: "Database connection failed",
+            error: error.message,
+            data: {}
+        });
     }
 });
 
