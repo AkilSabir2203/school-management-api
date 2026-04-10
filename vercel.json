@@ -9,7 +9,8 @@
     "rewrites": [
         {
             "source": "/(.*)",
-            "destination": "/src/index.js"
+            "destination": "/src/index.js",
+            "methods": ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"]
         }
     ]
 }
