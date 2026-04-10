@@ -4,6 +4,9 @@
   "description": "Project boilerplate for node",
   "main": "index.js",
   "type": "module",
+  "engines": {
+      "node": "24.1.0" 
+    },
   "scripts": {
   "start": "ls -R && node src/index.js",
     "dev": "npx nodemon src/index.js",
